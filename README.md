@@ -1,5 +1,6 @@
 # Spartan-Bulletin
 
+
 ## Requirements
 Node.js: nodejs.org
 
