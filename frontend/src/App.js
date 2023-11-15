@@ -3,6 +3,7 @@ import './App.css';
 import Nav from './components/Nav';
 import Home from './components/Home';
 import Forum from './components/Forum';
+import Settings from './components/Settings';
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 
 function App() {
@@ -17,7 +18,18 @@ function App() {
 			</Routes>
       	</header>
        </div>
-    </Router>
+    </Router>,
+	<Router>
+		<div className="App">
+      	<header className="App-header">        
+      		<Nav />
+			<Routes>
+				<Route path="/" element={<Home />} />
+				<Route path="/settings" element={<Settings />} />
+			</Routes>
+      	</header>
+       </div>
+	</Router>
   );
 }
 
