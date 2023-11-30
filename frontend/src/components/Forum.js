@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import {Link} from 'react-router-dom';
 
 function Forum() {
 	useEffect( ()=> {
@@ -15,17 +14,23 @@ function Forum() {
 	};
 
 	return(
-		<section>
-			{
-			items.map(item => (
-				<div>
-					<p>{item.name}</p>
-					<p>{item.msg}</p>
-					<p>{item.username}</p>
+		<>
+			<div className='forum'>
+				<div className='interests'>
+
 				</div>
-			))
-			}
-		</section>
+				<div className='posts'>
+					{items.map(item => (
+					<div>
+						<p>{item.name}</p>
+						<p>{item.msg}</p>
+						<p>{item.username}</p>
+					</div>
+					))}
+				</div>
+			</div>
+			
+		</>
 	);
 }
 
