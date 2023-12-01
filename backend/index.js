@@ -7,7 +7,7 @@ const { Server } = require('socket.io');
 const db = mysql.createPool({
 	host: 'localhost',
 	user: 'root', // default username
-	password: 'root123',//password of your choice
+	password: 'admin123',//password of your choice
 	database: 'test' //name of the schema/database
 })
 
