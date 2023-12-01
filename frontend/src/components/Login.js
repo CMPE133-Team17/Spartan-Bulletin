@@ -32,8 +32,8 @@ function Login() {
       console.log('Server response:', response);
 
       if (response.data === 'Success') {
-        console.log('Login successful, navigating to /home...');
-        navigate('/home');
+        console.log('Login successful, navigating to your Bulletin');
+        navigate('/bulletin');
       } else {
         alert('No record of this user exists. Try a different username/password');
       }

@@ -25,7 +25,7 @@ useEffect(() => {
   if (errors.name === "" && errors.email === '' && errors.password === '') {
     axios.post('http://localhost:4000/signup', values)
       .then(res => {
-        navigate('/home');
+        navigate('/bulletin');
       })
       .catch(err => console.log(err));
   }
