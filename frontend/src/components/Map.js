@@ -16,7 +16,7 @@ function SpartanMap() {
 	return(
 		<section>
 			<div style = {{height: "93vh"}}>
-				<APIProvider apiKey={'AIzaSyCYIo7iigRKnpJ1XGjQd1Nh_yrG_L5ekH4'}>
+				<APIProvider apiKey={'INSERT API KEY HERE'}>
 					<Map zoom={17} 
 					center={position} 
 					mapId={'de8660dc41ef3e4f'}
