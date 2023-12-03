@@ -18,7 +18,6 @@ app.post('/signup', async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
-        // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const sql = "INSERT INTO login (`name`, `email`, `password`) VALUES (?, ?, ?)";
@@ -42,7 +41,7 @@ app.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        const sql = "SELECT * FROM login WHERE `email` = ?";
+        const sql = "SELECT id, name, email, password FROM login WHERE `email` = ?";
         const values = [email];
 
         db.query(sql, values, async (err, data) => {
@@ -53,16 +52,15 @@ app.post('/login', async (req, res) => {
             }
 
             if (data.length > 0) {
-                // Compare the hashed password
                 const isPasswordValid = await bcrypt.compare(password, data[0].password);
 
                 if (isPasswordValid) {
-                    return res.json("Success");
+                    return res.json({ status: "Success", user: { name: data[0].name } });
                 } else {
-                    return res.json("Failure");
+                    return res.json("Failure1");
                 }
             } else {
-                return res.json("Failure");
+                return res.json("Failure12");
             }
         });
     } catch (error) {

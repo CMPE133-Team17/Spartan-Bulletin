@@ -1,20 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const Bulletin = ({ user }) => {
+  const [userData, setUserData] = useState(null);
   const [posts, setPosts] = useState([]);
   const [newPostContent, setNewPostContent] = useState('');
 
   useEffect(() => {
-    // Fetch posts when the component mounts
     fetchPosts();
-  }, []);
+    const authCookie = Cookies.get('auth');
+  if (authCookie) {
+    const userData = JSON.parse(authCookie);
+    setUserData(userData);
+    console.log('User data from cookie: ', userData);
+}
+  }, [user]);
 
   const fetchPosts = async () => {
     try {
-      // Make an API call to get bulletin board posts based on user's clubs of interest
+
       const response = await axios.get('/api/posts', {
-        params: { userId: user.id }, // Assuming your backend supports fetching posts by user ID
+        params: { userId: user.id }, 
       });
 
       setPosts(response.data.posts);
@@ -25,16 +32,13 @@ const Bulletin = ({ user }) => {
 
   const handleCreatePost = async () => {
     try {
-      // Make an API call to create a new bulletin board post
       await axios.post('/api/createPost', {
         content: newPostContent,
         userId: user.id,
-        clubId: user.clubs[0].id, // Assuming a user is associated with at least one club
+        clubId: user.clubs[0].id, 
       });
 
-      // Refetch posts after creating a new post
       fetchPosts();
-      // Clear the input field
       setNewPostContent('');
     } catch (error) {
       console.error('Error creating post:', error);
@@ -43,9 +47,12 @@ const Bulletin = ({ user }) => {
 
   return (
     <div>
-      <h2>Bulletin Board</h2>
+     {userData && (
+          <div>
+            <h2>{userData.name}'s Bulletin Board!</h2>
+          </div>
+        )}
 
-      {/* Display posts */}
       <div>
         {posts.map((post) => (
           <div key={post.id}>
@@ -55,7 +62,6 @@ const Bulletin = ({ user }) => {
         ))}
       </div>
 
-      {/* Allow users to create posts */}
       <div>
         <h3>Create a New Post</h3>
         <textarea

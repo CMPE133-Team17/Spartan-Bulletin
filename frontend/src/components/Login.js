@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Validation from './LoginValidation';
 import axios from 'axios';
+import Cookies from 'js-cookie';
+
 
 function Login() {
   const [values, setValues] = useState({
@@ -31,7 +33,18 @@ function Login() {
 
       console.log('Server response:', response);
 
-      if (response.data === 'Success') {
+      if (response.data.status === 'Success') {
+        const userData = {
+          name: response.data.user.name,
+          username: values.email,
+          password: values.password,
+        };
+
+        sessionStorage.setItem('auth', JSON.stringify(userData));
+
+        const expirationTime = new Date(new Date().getTime() + 60000); 
+        Cookies.set('auth', JSON.stringify(userData), { expires: expirationTime });
+
         console.log('Login successful, navigating to your Bulletin');
         navigate('/bulletin');
       } else {
@@ -44,6 +57,7 @@ function Login() {
     console.log('Form has validation errors');
   }
 };
+
 
   return (
     <div className='d-flex justify-content-center align-items-center bg-primary vh-100'>

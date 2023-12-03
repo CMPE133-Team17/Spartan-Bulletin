@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Validation from './SignupValidation';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 function Signup() {
   const [values, setValues] = useState({
@@ -25,6 +26,18 @@ useEffect(() => {
   if (errors.name === "" && errors.email === '' && errors.password === '') {
     axios.post('http://localhost:4000/signup', values)
       .then(res => {
+        const userData = {
+          name: values.name,
+          username: values.email,
+          password: values.password,
+        };
+
+        sessionStorage.setItem('auth', JSON.stringify(userData));
+
+        const expirationTime = new Date(new Date().getTime() + 60000); 
+        Cookies.set('auth', JSON.stringify(userData), { expires: expirationTime });
+
+        console.log('Login successful, navigating to your Bulletin');
         navigate('/bulletin');
       })
       .catch(err => console.log(err));
