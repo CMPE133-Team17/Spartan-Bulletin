@@ -68,6 +68,46 @@ app.post('/login', async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
+app.get('/bulletin/posts', async (req, res) => {
+    try {
+        const { userId } = req.query;
+
+        const sql = "SELECT post_id, content, user_id, club_id, timestamp FROM posts WHERE user_id = ?";
+        const values = [userId];
+
+        db.query(sql, values, (err, data) => {
+            if (err) {
+                console.error("Error querying posts from database:", err);
+                res.status(500).json({ error: "Internal Server Error" });
+            } else {
+                res.status(200).json({ posts: data });
+            }
+        });
+    } catch (error) {
+        console.error("Error processing posts request:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+app.post('/bulletin/createPost', async (req, res) => {
+    try {
+        const { content, userId, clubId } = req.body;
+
+        const sql = "INSERT INTO posts (content, user_id, club_id) VALUES (?, ?, ?)";
+        const values = [content, userId, clubId];
+
+        db.query(sql, values, (err, result) => {
+            if (err) {
+                console.error("Error inserting post into database:", err);
+                res.status(500).json({ error: "Internal Server Error" });
+            } else {
+                res.status(201).json({ message: "Post created successfully" });
+            }
+        });
+    } catch (error) {
+        console.error("Error processing createPost request:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
 
 app.listen(4000, () => {
     console.log('listening on port 4000');
