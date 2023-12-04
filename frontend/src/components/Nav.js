@@ -25,9 +25,11 @@ function Nav() {
         </div>
         <div className="navbar-nav ml-auto">
           <Link to='/bulletin' className="nav-item nav-link active">Bulletin</Link>
+          <Link to='/map' className="nav-item nav-link active">Map</Link>
           <Link to='/forum' className="nav-item nav-link">Forum</Link>
-          <Link to='/settings' className='nav-item nav-link'>Settings</Link>
           <Link to='/DM' className='nav-item nav-link'>DM</Link>
+          <Link to='/resources' className='nav-item nav-link'>Resources</Link>
+          <Link to='/settings' className='nav-item nav-link'>Settings</Link>
         <button onClick={handleLogout} className="nav-item nav-link btn btn-danger">Logout</button>
         </div>
       </div>
