@@ -1,32 +1,48 @@
-import React, {useEffect, useState} from 'react';
-import {Link} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import Cookies from 'js-cookie';
 
 function Forum() {
-	useEffect( ()=> {
-		fetchItems();
-	},[]);
-	
-	const [items, setItems] = useState([]);
-	
-	const fetchItems = async() => {
-		const data = await fetch('/forum');
-		const items = await data.json();
-		setItems(items);
-	};
+  const [userData, setUserData] = useState(null);
+  const [items, setItems] = useState([]);
 
-	return(
-		<section>
-			{
-			items.map(item => (
-				<div>
-					<p>{item.name}</p>
-					<p>{item.msg}</p>
-					<p>{item.username}</p>
-				</div>
-			))
-			}
-		</section>
-	);
+  useEffect(() => {
+    fetchItems();
+    const authCookie = Cookies.get('auth');
+    if (authCookie) {
+      const userData = JSON.parse(authCookie);
+      setUserData(userData);
+      console.log('User data from cookie:', userData);
+    }
+  }, []);
+
+  const fetchItems = async () => {
+    try {
+      const data = await fetch('/forum');
+      const items = await data.json();
+      setItems(items);
+    } catch (error) {
+      console.error('Error fetching forum items:', error);
+    }
+  };
+
+  return (
+    <section>
+      <div>
+        {userData && (
+          <div>
+            <p>Welcome, {userData.name}!</p>
+          </div>
+        )}
+        {items.map((item) => (
+          <div key={item.id}>
+            <p>{item.name}</p>
+            <p>{item.msg}</p>
+            <p>{item.username}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
 }
 
 export default Forum;
