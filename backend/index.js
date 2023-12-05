@@ -252,7 +252,7 @@ app.post('/api/addFriend', (req, res) => {
     })
 })
 
-app.post('/api/addFriend', (req, res) => {
+app.post('/api/deleteFriend', (req, res) => {
     const user = req.body.user;
     const friend = req.body.fren;
 
@@ -266,7 +266,78 @@ app.post('/api/addFriend', (req, res) => {
         }
     })
 })
+///////////////////////////////////////////////////////////BULLETIN////////////////////////////////////////
+app.get('/bulletin/posts', async (req, res) => {
+    try {
+        const { name } = req.query;
 
+        const postsQuery = "SELECT post_id, content, user_id, timestamp, club_id, building, room_number, name FROM posts";
+
+        db.query(postsQuery,'', async (err, postsData) => {
+            if (err) {
+                console.error("Error querying posts from database:", err);
+                res.status(500).json({ error: "Internal Server Error" });
+                return;
+            }
+
+            const postsWithDetails = await Promise.all(postsData.map(async (post) => {
+                const clubQuery = "SELECT name FROM clubs WHERE id = ?";
+                const clubValues = [post.club_id];
+
+                const [clubData] = await db.promise().query(clubQuery, clubValues);
+
+                return {
+                    ...post,
+                    club_name: clubData.length > 0 ? clubData[0].club_name : null,
+                };
+            }));
+
+            res.status(200).json({ posts: postsWithDetails });
+        });
+    } catch (error) {
+        console.error("Error processing posts request:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+app.post('/bulletin/createPost', async (req, res) => {
+    try {
+        console.log(req.body); 
+        const { content, building, roomNumber, email, clubId, userId, name } = req.body;
+        const sql = "INSERT INTO posts (content, building, room_number, user_id, club_id, name) VALUES (?, ?, ?, ?, ?, ?)";
+        const values = [content, building, roomNumber, userId, clubId, name];
+
+        db.query(sql, values, (err, result) => {
+            if (err) {
+                console.error("Error inserting post into database:", err);
+                res.status(500).json({ error: "Internal Server Error" });
+            } else {
+                console.log("Post created successfully");
+                res.status(201).json({ message: "Post created successfully" });
+            }
+        });
+    } catch (error) {
+        console.error("Error processing createPost request:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+app.get('/bulletin/clubs', async (req, res) => {
+    try {
+        const sql = "SELECT id, name FROM clubs";  
+        db.query(sql, (err, data) => {
+            if (err) {
+                console.error("Error querying clubs from database:", err);
+                res.status(500).json({ error: "Internal Server Error" });
+            } else {
+                res.status(200).json({ clubs: data });
+            }
+        });
+    } catch (error) {
+        console.error("Error processing clubs request:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
 
 ///////////////////////////////////////////////////////////OTHER STUFFS////////////////////////////////////////
 const db = mysql.createPool({
