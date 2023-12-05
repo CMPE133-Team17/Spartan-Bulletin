@@ -1,24 +1,141 @@
 .dm {
     display: flex;
-    flex-direction:row;
-    padding-top: 10px;
-    padding-left:20px;
+    height: calc(100vh - 56px);
 }
 
 .friends {
-    padding-right: 300px;
+    padding: 10px;
+    width: 30%;
     background-color: lightcoral;
+    flex: 30%;
 }
 
-.input {
-    bottom: 0;
-    position: absolute;
+.inbox {
+    background-color: white;
+    align-items: flex-end;
+    width: 100%;
+}
+
+.searchFriend {
+    border: none;
+    border-bottom: 1px solid grey;
+    width: 100%;
+
+}
+
+.inputBar {
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    padding-left: 10px;
     padding-bottom: 10px;
-    right: 0;
-    padding-right: 50px;
-    background-color: yellow;
+    padding-right: 20px;
 }
 
-.chat {
-    background-color: pink;
+.chatInput {
+    width: 80%;
+    height: 60px;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background-color: aliceblue;
+}
+
+.sendButton {
+    width: 70px;
+    height: 40px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: teal;
+}
+
+.inboxWrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    height: 100%;
+}
+
+.convo {
+    height: 100%;
+    padding-right: 10px;
+    overflow-y: scroll;
+}
+
+.chatHistory {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 40px;
+}
+
+.chatHistory:hover {
+    background-color: gray;
+}
+
+.convoImg {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 20px;
+}
+
+.names {
+    font-weight: 500;
+}
+
+.bubble {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    padding-left: 10px;
+
+}
+
+.bubbles {
+    display: flex;
+}
+
+.profilePic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.messageText {
+    padding: 10px;
+    border-radius: 20px;
+    background-color: #1877f2;
+    color: white;
+}
+
+.timestamp {
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+bubble.own {
+   justify-content: flex-end;
+}
+
+.bubble.own .messageText {
+    background-color: rgb(245, 241, 241);
+    color: black;
+}
+
+.chat-header {
+    background-color: white;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.chat-header:hover {
+    background-color: gainsboro;
 }
