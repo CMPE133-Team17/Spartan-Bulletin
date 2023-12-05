@@ -35,6 +35,7 @@ function Login() {
 
         if (response.data.status === 'Success') {
           const userData = {
+            id: response.data.user.id,
             name: response.data.user.name,
             username: values.email,
             password: values.password,
