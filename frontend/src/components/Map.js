@@ -3,8 +3,7 @@ import { useState } from 'react';
 import {APIProvider, Map, AdvancedMarker, Pin, InfoWindow} from '@vis.gl/react-google-maps';
 
 //TODO:
-// - Allow click to get lat/long
-// - Connect Database to Map Pointers
+// - Database
 
 
 
@@ -19,7 +18,6 @@ function SpartanMap() {
 	
 	strictBounds: false
 	};
-	
 	
 	//Test positions
 	var positions = [];
@@ -59,10 +57,6 @@ function SpartanMap() {
 					mapId={'de8660dc41ef3e4f'}
 					heading={329.3}
 					restriction={SjsuBounds}
-					onClick={ev => {
-      				console.log("latitide = ", ev.latLng());
-      				console.log("longitude = ", ev.latLng());
-    				}}
 					>
 						{posList}
 					</Map>
