@@ -60,6 +60,7 @@ const Modal = (props) => {
                                     )}
                                     </select>
                                     <input className='title'placeholder='Title of this forum....' onChange={(event) => setTitle(event.target.value)} required/>
+                                    <input type ="date"></input>
                                     <button className='submit' >Submit</button>
                                     <button className='cancel' onClick={() => {
                                         props.setOpenModal(false);

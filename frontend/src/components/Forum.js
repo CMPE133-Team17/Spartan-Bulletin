@@ -23,30 +23,31 @@ function Forum ({user}){
 	const [friendStatus, setFriendStatus] = useState(null);
 	
 
+
+	const fetchForumPosts = async() => {
+		try {
+			const response = await axios.get('/api/getForumPosts');
+			setForumPosts(response.data);
+		} catch (err) {
+			console.error('Error fetching data: ', err);
+		}
+	};
+
+	const fetchForums = async() => {
+		try {
+			const response = await axios.get('/api/getForums');
+			setForums(response.data);
+		} catch (err) {
+			console.error('Error fetching data: ', err);
+		}
+	};
+
 	useEffect( ()=> {
 		const authCookie = Cookies.get('auth');
     	if (authCookie) {
       		const userData = JSON.parse(authCookie);
       		setUserData(userData);
       		console.log('User data from cookie: ', userData);
-
-			const fetchForumPosts = async() => {
-				try {
-					const response = await axios.get('/api/getForumPosts');
-					setForumPosts(response.data);
-				} catch (err) {
-					console.error('Error fetching data: ', err);
-				}
-			};
-		
-			const fetchForums = async() => {
-				try {
-					const response = await axios.get('/api/getForums');
-					setForums(response.data);
-				} catch (err) {
-					console.error('Error fetching data: ', err);
-				}
-			};
 
 			const fetchClubs = async() => {
 				const clubResponse = await axios.get('/api/getClubs');
@@ -61,17 +62,13 @@ function Forum ({user}){
 
 	const addForumPost = async (username, content, imgURL) => {
 		axios.post("/api/addForumPost", {user : username, text: content, img: imgURL});
-		
-		const update = axios.get("/api/getForumPosts");
-		setForumPosts(update);
+		await fetchForumPosts();
 
 	}
 
 	const addNewForum = async (club, title) => {
-		axios.post('/api/addNewForum', {user: userData.name, club: club, title:title})
-		
-		const update = axios.get("/api/getForums");
-		setForums(update);
+		axios.post('/api/addNewForum', {user: userData.name, club: club, title:title});
+		await fetchForums();
 	}
 
 	const handleClick = async (username) => {
