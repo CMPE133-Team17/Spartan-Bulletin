@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, {useEffect, useState} from 'react';
 import { BsFillPlusCircleFill } from "react-icons/bs";
 import '../Forum.css';
@@ -23,31 +24,30 @@ function Forum ({user}){
 	const [friendStatus, setFriendStatus] = useState(null);
 	
 
-
-	const fetchForumPosts = async() => {
-		try {
-			const response = await axios.get('/api/getForumPosts');
-			setForumPosts(response.data);
-		} catch (err) {
-			console.error('Error fetching data: ', err);
-		}
-	};
-
-	const fetchForums = async() => {
-		try {
-			const response = await axios.get('/api/getForums');
-			setForums(response.data);
-		} catch (err) {
-			console.error('Error fetching data: ', err);
-		}
-	};
-
 	useEffect( ()=> {
 		const authCookie = Cookies.get('auth');
     	if (authCookie) {
       		const userData = JSON.parse(authCookie);
       		setUserData(userData);
       		console.log('User data from cookie: ', userData);
+
+			const fetchForumPosts = async() => {
+				try {
+					const response = await axios.get('/api/getForumPosts');
+					setForumPosts(response.data);
+				} catch (err) {
+					console.error('Error fetching data: ', err);
+				}
+			};
+		
+			const fetchForums = async() => {
+				try {
+					const response = await axios.get('/api/getForums');
+					setForums(response.data);
+				} catch (err) {
+					console.error('Error fetching data: ', err);
+				}
+			};
 
 			const fetchClubs = async() => {
 				const clubResponse = await axios.get('/api/getClubs');
@@ -62,13 +62,17 @@ function Forum ({user}){
 
 	const addForumPost = async (username, content, imgURL) => {
 		axios.post("/api/addForumPost", {user : username, text: content, img: imgURL});
-		await fetchForumPosts();
+		
+		const update = axios.get("/api/getForumPosts");
+		setForumPosts(update);
 
 	}
 
 	const addNewForum = async (club, title) => {
-		axios.post('/api/addNewForum', {user: userData.name, club: club, title:title});
-		await fetchForums();
+		axios.post('/api/addNewForum', {user: userData.name, club: club, title:title})
+		
+		const update = axios.get("/api/getForums");
+		setForums(update);
 	}
 
 	const handleClick = async (username) => {
@@ -170,3 +174,53 @@ export default Forum;
 
 // {openModal2 && <Modal2 openModal2={openModal2} setOpenModal2={setOpenModal2} curr={selectedUser} interests={interests}/>}
 
+=======
+import React, { useEffect, useState } from 'react';
+import Cookies from 'js-cookie';
+
+function Forum() {
+  const [userData, setUserData] = useState(null);
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    fetchItems();
+    const authCookie = Cookies.get('auth');
+    if (authCookie) {
+      const userData = JSON.parse(authCookie);
+      setUserData(userData);
+      console.log('User data from cookie:', userData);
+    }
+  }, []);
+
+  const fetchItems = async () => {
+    try {
+      const data = await fetch('/forum');
+      const items = await data.json();
+      setItems(items);
+    } catch (error) {
+      console.error('Error fetching forum items:', error);
+    }
+  };
+
+  return (
+    <section>
+      <div>
+        {userData && (
+          <div>
+            <p>Welcome, {userData.name}!</p>
+          </div>
+        )}
+        {items.map((item) => (
+          <div key={item.id}>
+            <p>{item.name}</p>
+            <p>{item.msg}</p>
+            <p>{item.username}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export default Forum;
+>>>>>>> a72d754382a447739731e6b75538050988e73424

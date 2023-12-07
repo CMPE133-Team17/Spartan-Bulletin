@@ -11,6 +11,7 @@ const Bulletin = ({ user }) => {
   const [roomNumber, setRoomNumber] = useState('');
   const [clubs, setClubs] = useState([]);
   const [name, setName] = useState('');
+  const[clubName, setClubName] = useState('');
 
   useEffect(() => {
     fetchClubs();
@@ -55,7 +56,8 @@ const Bulletin = ({ user }) => {
       roomNumber,
       email,
       userId: userData.id,
-      name
+      name,
+      clubName: clubName
     });
     }else{
       console.error("name isn't right");
@@ -73,85 +75,90 @@ const Bulletin = ({ user }) => {
 
 
  return (
-  <div style={{ backgroundColor: '#3498db', color: 'white', padding: '20px', minHeight: '100vh' }}>
-    {userData && (
-      <div>
-        <h2>{userData.name}'s Bulletin Board!</h2>
-      </div>
-    )}
+    <div style={{ backgroundColor: '#3498db', color: 'white', padding: '20px', minHeight: '100vh' }}>
+      {userData && (
+        <div>
+          <h2>{userData.name}'s Bulletin Board!</h2>
+        </div>
+      )}
 
-    <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <div style={{ width: '50%', marginBottom: '20px', border: '2px solid white', borderRadius: '10px', padding: '20px' }}>
-        <h3>Create a New Post</h3>
-        <form style={{ marginBottom: '20px' }}>
-          <div style={{ marginBottom: '10px' }}>
-            <label style={{ marginRight: '10px' }}>Select Club:</label>
-            <select
-              value={selectedClub}
-              onChange={(e) => setSelectedClub(e.target.value)}
-              style={{ padding: '8px', marginRight: '20px' }}
+      <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div
+          style={{
+            width: '50%',
+            marginBottom: '20px',
+            border: '2px solid white',
+            borderRadius: '10px',
+            padding: '20px',
+          }}
+        >
+          <h3 style={{ marginBottom: '20px', textAlign: 'center' }}>Create a New Post</h3>
+          <form>
+            <div style={{ marginBottom: '10px' }}>
+              <label style={{ display: 'block', marginBottom: '5px' }}>Club:</label>
+              <input
+                type="text"
+                value={clubName}
+                onChange={(e) => setClubName(e.target.value)}
+                placeholder="Club Name"
+                style={inputStyle}
+              />
+            </div>
+
+            <div style={{ marginBottom: '10px' }}>
+              <label style={{ display: 'block', marginBottom: '5px' }}>Building:</label>
+              <input
+                type="text"
+                value={building}
+                onChange={(e) => setBuilding(e.target.value)}
+                placeholder="Building"
+                style={inputStyle}
+              />
+            </div>
+
+            <div style={{ marginBottom: '10px' }}>
+              <label style={{ display: 'block', marginBottom: '5px' }}>Room Number:</label>
+              <input
+                type="text"
+                value={roomNumber}
+                onChange={(e) => setRoomNumber(e.target.value)}
+                placeholder="Room Number"
+                style={inputStyle}
+              />
+            </div>
+
+            <div style={{ marginBottom: '10px' }}>
+              <label style={{ display: 'block', marginBottom: '5px' }}>Name:</label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Your Name"
+                style={inputStyle}
+              />
+            </div>
+
+            <div style={{ marginBottom: '10px' }}>
+              <label style={{ display: 'block', marginBottom: '5px' }}>Post Content:</label>
+              <textarea
+                value={newPostContent}
+                onChange={(e) => setNewPostContent(e.target.value)}
+                placeholder="Enter your post content..."
+                style={{ ...inputStyle, height: '100px' }}
+              />
+            </div>
+
+            <button
+              onClick={handleCreatePost}
+              style={{ backgroundColor: '#C4B454', color: 'white', padding: '12px', cursor: 'pointer' }}
             >
-              <option value="">Select a Club</option>
-              {clubs.map((club) => (
-                <option key={club.id} value={club.id}>
-                  {club.name}
-                </option>
-              ))}
-            </select>
-          </div>
+              Create Post
+            </button>
+          </form>
+        </div>
 
-          <div style={{ display: 'flex', marginBottom: '10px' }}>
-            <label style={{ marginRight: '10px' }}>Building:</label>
-            <input
-              type="text"
-              value={building}
-              onChange={(e) => setBuilding(e.target.value)}
-              placeholder="Building"
-              style={{ marginRight: '10px', padding: '8px' }}
-            />
-
-            <label style={{ marginRight: '10px' }}>Room Number:</label>
-            <input
-              type="int"
-              value={roomNumber}
-              onChange={(e) => setRoomNumber(e.target.value)}
-              placeholder="Room Number"
-              style={{ padding: '8px' }}
-            />
-          </div>
-
-          <div style={{ display: 'flex', marginBottom: '10px' }}>
-            <label style={{ marginRight: '10px' }}>Name:</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Your Name"
-              style={{ marginRight: '10px', padding: '8px' }}
-            />
-          </div>
-
-          <div style={{ marginBottom: '10px' }}>
-            <label style={{ marginRight: '10px' }}>Post Content:</label>
-            <textarea
-              value={newPostContent}
-              onChange={(e) => setNewPostContent(e.target.value)}
-              placeholder="Enter your post content..."
-              style={{ marginBottom: '10px', padding: '8px', width: '100%' }}
-            />
-          </div>
-
-          <button
-            onClick={handleCreatePost}
-            style={{ backgroundColor: '#C4B454', color: 'white', padding: '12px', cursor: 'pointer' }}
-          >
-            Create Post
-          </button>
-        </form>
-      </div>
-
-      <div style={{ width: '50%' }}>
-        <h3>Recent Posts</h3>
+        <div style={{ width: '50%' }}>
+        <h3 style={{ textAlign: 'center' }}>Recent Posts</h3>
         {posts.map((post) => (
           <div
             key={post.id}
@@ -162,21 +169,28 @@ const Bulletin = ({ user }) => {
               marginBottom: '20px',
               border: '2px solid #3498db',
               borderRadius: '10px',
+              width: '100%', 
+              boxSizing: 'border-box', 
             }}
           >
-            <p style={{ fontSize: '16px', marginBottom: '10px' }}>{post.content}</p>
-            <p style={{ fontSize: '14px', fontStyle: 'italic' }}>
-              Posted by {post.name} | Club: {selectedClub} | Building: {post.building} | Room Number: {post.room_number}
+            <p style={{ fontSize: '16px', marginBottom: '10px', textAlign: 'center' }}>{post.content}</p>
+            <p style={{ fontSize: '14px', fontStyle: 'italic', textAlign: 'center' }}>
+              Posted by {post.name} | Club: {post.club_name} | Building: {post.building} | Room Number: {post.room_number}
             </p>
           </div>
         ))}
       </div>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
-
-
+const inputStyle = {
+  width: '100%',
+  padding: '8px',
+  boxSizing: 'border-box',
+  borderRadius: '5px',
+  border: '1px solid #ccc',
 };
 
 export default Bulletin;

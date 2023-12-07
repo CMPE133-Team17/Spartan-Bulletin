@@ -17,8 +17,8 @@ function SpartanMap() {
 	
 	//Test positions
 	var positions = [];
-	positions.push({id: 0, mapp:{lat:37.33546 , lng:-121.88189}, club:"Test Club", text:"Test Club Information"});
-	positions.push({id: 1, mapp:{lat:37.33528 , lng:-121.88148}, club:"Test Club 2", text:"Test Club Information"});
+	positions.push({id: 0, mapp:{lat:37.33666725233741, lng:-121.88151529690411}, club:"ENG Club Event", text:"ENG 123 - Event Information here"});
+    positions.push({id: 1, mapp:{lat:37.33467965635882, lng:-121.88421359914061}, club:"Science Club Event", text:"SCI 345 - Event Information Here"});
 	
 	
 	//SET STATE

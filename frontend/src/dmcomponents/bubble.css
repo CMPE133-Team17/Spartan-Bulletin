@@ -1,0 +1,38 @@
+.bubble {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.bubbles {
+    display: flex;
+}
+
+.profilePic {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.messageText {
+    padding: 10px;
+    border-radius: 20px;
+    background-color: #1877f2;
+    color: white;
+}
+
+.timestamp {
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+bubble.own {
+    align-items: flex-end;
+}
+
+.bubble.own .messageText {
+    background-color: rgb(245, 241, 241);
+    color: black;
+}
