@@ -21,6 +21,7 @@ const DM = ({user}) => {
   });
 
   useEffect(() => {
+
     const authCookie = Cookies.get('auth');
     if (authCookie) {
       const userData = JSON.parse(authCookie);
@@ -42,13 +43,13 @@ const DM = ({user}) => {
       fetchFriends();
 
     }
-  }, []);
+  }, [user]);
 
-  useEffect(() => {
-    socket.on('receive_message', (data) => {
-      setChats((chats) => [...chats, data]);
-    })
-  }, [socket])
+  // useEffect(() => {
+  //   socket.on('receive_message', (data) => {
+  //     setChats((chats) => [...chats, data]);
+  //   })
+  // }, [socket])
   
 
   const fetchMessages = async () => {

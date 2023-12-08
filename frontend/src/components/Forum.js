@@ -1,14 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import { BsFillPlusCircleFill } from "react-icons/bs";
 import '../Forum.css';
-// import {Link} from 'react-router-dom';
 import { FaHeart } from "react-icons/fa";
-import { FaRegComment } from "react-icons/fa6";
 import Cookies from 'js-cookie';
 import axios from 'axios';
 import Modal from './Modal.js';
 import { AiFillCaretRight } from "react-icons/ai";
-import 'reactjs-popup/dist/index.css';
+import {format} from 'timeago.js';
+import Modal2 from './Modal2.js'
 
 
 
@@ -19,14 +18,16 @@ function Forum ({user}){
 	const [openModal, setOpenModal] = useState(false);
 	const [forumPosts, setForumPosts] = useState([]);
 	const [clubs, setClubs] = useState([]);
-	const [selectedUser, setSelectedUser] = useState(null);
+	const [interests, setInterests] = useState([]);
 	const [friendStatus, setFriendStatus] = useState(null);
-	
+	const [selectedUser, setSelectedUser] = useState(null);
+	const [openModal2, setOpenModal2] = useState(false);
+	const [currentForum, setCurrentForum] = useState('General');
 
 
 	const fetchForumPosts = async() => {
 		try {
-			const response = await axios.get('/api/getForumPosts');
+			const response = await axios.get('/api/getForumPosts', {params: {forum: currentForum}});
 			setForumPosts(response.data);
 		} catch (err) {
 			console.error('Error fetching data: ', err);
@@ -58,31 +59,41 @@ function Forum ({user}){
 			fetchForums();
 			fetchClubs();
      	};
-	},[]);
+	},[user]);
 
 	const addForumPost = async (username, content, imgURL) => {
-		axios.post("/api/addForumPost", {user : username, text: content, img: imgURL});
+		await axios.post("/api/addForumPost", {user : username, text: content, img: imgURL, forum:currentForum});
 		await fetchForumPosts();
 
 	}
 
-	const addNewForum = async (club, title) => {
-		axios.post('/api/addNewForum', {user: userData.name, club: club, title:title});
+	const addNewForum = async (club, title, date) => {
+		await axios.post('/api/addNewForum', {user: userData.name, club: club, title:title, date:date});
 		await fetchForums();
 	}
 
 	const handleClick = async (username) => {
 		setSelectedUser(username);
-
+	
 		if (userData.name !== username) {
-			const res = await axios.put('/api/checkFriendList', {user: userData.name, fren: username});
-			setFriendStatus(res.data);
-			console.log(friendStatus);
-			if (friendStatus !== null) {
-				setOpenModal(true);
+			try {
+				const status = await axios.get('/api/checkFriendList', { params: { user: userData.name, fren: username } });
+				const res = await axios.get('/api/getFriendInterests', { params: { fren: username } });
+
+				setInterests(res.data);
+				setFriendStatus(status.data);
+	
+	
+				if (friendStatus !== null && selectedUser !== null) {
+					setOpenModal2(true);
+				}
+			} catch (error) {
+				console.error('Error occurred:', error);
 			}
 		}
-	}
+	};
+	
+	
 
 	const removeFriend = async (friend) => {
 		await axios.post('/api/removeFriend', {user: userData.name, fren: friend}, (err, result) => {
@@ -100,17 +111,23 @@ function Forum ({user}){
 		})
 	}
 
+	const handleChange = async(val) => {
+		setCurrentForum(val);
+		console.log(currentForum);
+		await fetchForumPosts();
+	}
+
 	return(
 		<>
 
 			<div className='forum'>
-				<div className='interests'>
-					<div className='left-side'>
+				<div className='forums'>
+					<div className='left-side' style={{maxWidth: '100%'}}>
 						<h3 style={{color : 'white'}}>Upcoming events: </h3>
 						{forums && forums.length > 0 ? (
 							forums.map((i) => (
-								<div className='list' style={{width: '100%', color: 'white'}} key={i.title}>
-									<div className='title'>
+								<div className='list' style={{width: '100%', color: 'white', borderRadius: '20px'}} key={i.title}>
+									<div className='title' style={{display:'flex'}}>
 										<AiFillCaretRight />
 										<p>{i.clubname}: {i.title}</p>
 									</div>
@@ -128,24 +145,28 @@ function Forum ({user}){
 						<div className='page-title'>
 							<h3>{userData.name}'s Forum Page!</h3>
 						</div>
+						<select onChange={(event) => {setCurrentForum(event.target.value); console.log(currentForum)}}>
+							<option value='General'>General</option>
+							{forums.map((curr) => (
+								<option value={curr.title}>{curr.clubname}: {curr.title}</option>
+							))}
+						</select>
 						{forumPosts && forumPosts.length > 0 ?(
 							forumPosts.map(i => (
 							<div className='post'>
-							<div className='main' key={i.username} onClick={() => {handleClick(i.username)}}>
-								<div className='prof'>
+							<div className='main' key={i.username}>
+								<div className='prof' onClick={() => {handleClick(i.username)}}>
 									<img className='post-image' src={require("../conversation_photo.png")} alt='spartan'/>
 									<h5 className='username' >{i.username}</h5>
 								</div>
 								<div className='content'>
 									<p className='content' style={{fontSize:18}}>{i.content}</p>
-									<p className='date' style={{fontSize:12}}>{i.timestamp}</p>
 								</div>
-							</div>
-							<div className='likes'>
-								<FaHeart className='heart' />
-								<p>Likes</p>
-								<FaRegComment flip="horizontal" />
-								<p>Comments</p>
+								<div className='likes' style={{display: 'flex', justifyContent: 'flex-start', verticalAlign:'center'}}>
+									<FaHeart className='heart' style={{marginLeft: '20px'}}/>
+									<p style={{margin: '0 10px'}}>{i.likes} Likes</p>
+									<p className='date' style={{fontSize:12, marginLeft: '60%'}}>{format(i.timestamp)}</p>
+								</div>
 							</div>
 						</div>
 						))):
@@ -160,13 +181,42 @@ function Forum ({user}){
 					}}/>
 				</div>
 			</div>
-			{openModal && <Modal openModal={openModal} setOpenModal={setOpenModal} username={userData.name} addForumPost={addForumPost} addNewForum={addNewForum} clubs={clubs} selectedUser={selectedUser} setSelectedUser={setSelectedUser} friendStatus={friendStatus} setFriendStatus={setFriendStatus} addFriend={addFriend} removeFriend={removeFriend}/>}
+
+			{openModal && (
+        		<div className="overlay" onClick={() => setOpenModal(false)}></div>
+      		)}
+
+			{openModal && 
+			<Modal 
+				openModal={openModal} 
+				setOpenModal={setOpenModal} 
+				username={userData.name} 
+				addForumPost={addForumPost} 
+				addNewForum={addNewForum} 
+				clubs={clubs} 
+			/>}
+
+			{openModal2 && 
+			<Modal2 
+				openModal2={openModal2} 
+				setOpenModal2={setOpenModal2} 
+				selectedUser={selectedUser}
+				setSelectedUser={setSelectedUser}
+				friendStatus={friendStatus}
+				setFriendStatus={setFriendStatus}
+				interests={interests}
+				addFriend={addFriend}
+				removeFriend={removeFriend}
+			/>}
 			
+			{openModal2 && (
+        		<div className="overlay" onClick={() => setOpenModal2(false)}></div>
+      		)}
 		</>
 	);
 }
 
 export default Forum;
 
-// {openModal2 && <Modal2 openModal2={openModal2} setOpenModal2={setOpenModal2} curr={selectedUser} interests={interests}/>}
+
 
