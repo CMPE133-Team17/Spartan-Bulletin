@@ -120,9 +120,10 @@ app.post('/api/addMsg', (req, res) => {
 ///////////////////////////////////////////////////////FORUM PAGE/////////////////////////////////////////////////////////////////////////
 
 app.get('/api/getForumPosts', (req, res) => {
-    const q = 'SELECT * FROM forum_post ORDER BY timestamp DESC';
+    const q = 'SELECT * FROM forum_post WHERE forum = ? ORDER BY timestamp DESC';
+    const forum = req.query.forum;
 
-    db.query(q, (err, data) => {
+    db.query(q, [forum], (err, data) => {
         if (err) {
             console.log(err);
         } else {
@@ -154,10 +155,9 @@ app.get('/api/getClubs', (req, res) => {
     })
 })
 
-app.put('/api/checkFriendList', (req, res) => {
-    const user = req.body.user;
-    const friend = req.body.fren;
-    console.log(user, friend);
+app.get('/api/checkFriendList', (req, res) => {
+    const user = req.query.user;
+    const friend = req.query.fren;
 
     const q = "SELECT * FROM friend_list WHERE (user1 = ? AND user2 = ?) OR (user1 = ? AND user2 = ?)";
     db.query(q, [user, friend, friend, user], (err, data) => {
@@ -165,7 +165,6 @@ app.put('/api/checkFriendList', (req, res) => {
             console.log(err);
             res.status(500).json({ error: 'Internal server error' });
         } else {
-            console.log(data);
             if (data.length > 0) {
                 const friendship = true;
                 res.json({friendship});
@@ -178,11 +177,12 @@ app.put('/api/checkFriendList', (req, res) => {
     });
 });
 
-app.post('/api/getInterests', (req, res) => {
-    const curr = req.body.curr;
+app.get('/api/getFriendInterests', (req, res) => {
+    const friend = req.query.fren;
+    console.log(friend);
 
-    const q = "SELECT clubname FROM interests WHERE username = ?";
-    db.query(q, [curr], (err, data) => {
+    const q = "SELECT * FROM interests WHERE username = ?";
+    db.query(q, [friend], (err, data) => {
         if (err) {
             console.log(err);
             res.status(500).json({ error: 'Error fetching interests' });
@@ -196,9 +196,11 @@ app.post('/api/addForumPost', (req, res) => {
     const user = req.body.user;
     const content = req.body.text;
     const url = req.body.img;
+    const forum = req.body.forum;
+
     if (url) {
-        const q = 'INSERT INTO forum_post (id, username, content, image, timestamp) VALUES (0, ?, ?, ?, NOW())';
-        db.query(q, [user, content, url], (err, data) => {
+        const q = 'INSERT INTO forum_post (username, content, image, forum, timestamp) VALUES (?, ?, ?, ?, NOW())';
+        db.query(q, [user, content, url, forum], (err, data) => {
             if(err) {
                 console.log(err);
             } else {
@@ -206,8 +208,8 @@ app.post('/api/addForumPost', (req, res) => {
             }
         })
     } else {
-        const q = 'INSERT INTO forum_post (username, content, timestamp) VALUES (?, ?, NOW())';
-        db.query(q, [user, content], (err, data) => {
+        const q = 'INSERT INTO forum_post (username, content, forum, timestamp) VALUES (?, ?, ?, NOW())';
+        db.query(q, [user, content, forum], (err, data) => {
             if(err) {
                 console.log(err);
             } else {
@@ -218,12 +220,12 @@ app.post('/api/addForumPost', (req, res) => {
 })
 
 app.post('/api/addNewForum', (req, res) => {
-    const user = req.body.user;
     const club = req.body.club;
     const title = req.body.title;
+    const date = req.body.date;
 
-    const q = 'INSERT INTO forums (title, clubname, date) VALUES (?, ?, CURDATE())';
-    db.query(q, [title, club], (err, data) => {
+    const q = 'INSERT INTO forums (title, clubname, date) VALUES (?, ?, ?)';
+    db.query(q, [title, club, date], (err, data) => {
         if (err) {
             console.log(err);
             res.status(500).send('Error inserting data');
@@ -249,11 +251,11 @@ app.post('/api/addFriend', (req, res) => {
     })
 })
 
-app.post('/api/deleteFriend', (req, res) => {
+app.post('/api/removeFriend', (req, res) => {
     const user = req.body.user;
     const friend = req.body.fren;
 
-    const q = "DELTE FROM friend_list WHERE (user1 = ? AND user2 = ?) OR (user1 = ? AND user2 = ?)";
+    const q = "DELETE FROM friend_list WHERE (user1 = ? AND user2 = ?) OR (user1 = ? AND user2 = ?)";
     db.query(q, [user, friend, friend, user], (err, data) => {
         if (err) {
             console.log(err);
