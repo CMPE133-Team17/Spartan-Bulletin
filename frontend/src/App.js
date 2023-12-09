@@ -10,8 +10,12 @@ import Signup from './components/signup';
 import Bulletin from './components/Bulletin';
 import BulletinViewer from './components/BulletinViewer';
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
+import {io} from 'socket.io-client';
 
 function App() {
+  
+  const socket = io.connect("http://localhost:4000");
+
   return (
       <Router>
       <div className="App">
@@ -22,7 +26,7 @@ function App() {
                 <Route path="/map" element={<SpartanMap />} />
                 <Route path="/resources" element={<Resources />} />
                 <Route path="/settings" element={<Settings />} />
-                <Route path="/DM" element={<DM />} />
+                <Route path="/DM" element={<DM socket={socket}/>} />
                 <Route path='/bulletin' element={<Bulletin />} />
                 <Route path='/signup' element={<Signup/>} />
                 <Route path='/viewer' element={<BulletinViewer/>} />

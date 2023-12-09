@@ -73,8 +73,6 @@ app.post('/api/getMsg', async (req, res) => {
 
     const roomId = req.body.id;
 
-    console.log(roomId);
-
     const q = "SELECT * FROM messages WHERE roomId = ?";
 
             db.query(q, [roomId], (err, data) => {
@@ -267,6 +265,21 @@ app.post('/api/removeFriend', (req, res) => {
         }
     })
 })
+
+app.post('/api/deletePost', (req, res) => {
+    const id = req.body.postId;
+
+    const q = "DELETE FROM forum_post WHERE id = ?";
+    
+    db.query(q, [id], (err, data) => {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log('post successfully removed');
+        }
+    })
+})
+
 ///////////////////////////////////////////////////////////BULLETIN////////////////////////////////////////
 app.get('/bulletin/posts', async (req, res) => {
     try {
@@ -363,34 +376,30 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: 'http://localhost:3000', 
-        methods: ['GET', 'POST'],
-        credentials: true
+        methods: ['GET', 'POST']
     }
 });
 
 io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
 
-    socket.on('disconnect', () => {
-        console.log('A user disconnected:', socket.id);
-    });
-
-    socket.on('chat message', (msg) => {
-        console.log('Received message:', msg);
-        io.emit('chat message', msg);
-    });
-
     socket.on('join_room', (data) => {
         socket.join(data);
         console.log(`User with ID: ${socket.id} joined room: ${data}`);
     });
 
-    socket.on('send_mssage', (data) => {
+    socket.on('send_message', (data) => {
         socket.to(data.room).emit('receive_message', data);
     })
+
+    socket.on('disconnect', () => {
+        console.log('A user disconnected:', socket.id);
+    });
 });
 
 ///////////////////////////////////////////////////////////MULTER////////////////////////////////////////
+
+app.use(express.static('uploads'));
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {

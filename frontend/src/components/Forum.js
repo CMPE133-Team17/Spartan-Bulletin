@@ -11,7 +11,6 @@ import Modal2 from './Modal2.js';
 import Modal3 from './Modal3.js';
 
 
-
 function Forum ({user}){
 
 	const [forums, setForums] = useState([]);
@@ -125,12 +124,23 @@ function Forum ({user}){
 		}
 	}
 
+	const deletePost = async (id) => {
+		try {
+		  await axios.post('/api/deletePost', { postId: id });
+			const updatedForumPosts = await axios.get('/api/getForumPosts');
+			setForumPosts(updatedForumPosts.data);
+		} catch (error) {
+		  console.error('Error deleting post:', error);
+		}
+	  };
+	  
+
 	return(
 		<>
 
 			<div className='forum'>
 				<div className='forums'>
-					<div className='left-side' style={{maxWidth: '100%'}}>
+					<div className='left-side' style={{maxWidth: '100%', paddingLeft:'10px'}}>
 						<h3 style={{color : 'white'}}>Upcoming events: </h3>
 						{forums && forums.length > 0 ? (
 							forums.map((i) => (
@@ -164,16 +174,25 @@ function Forum ({user}){
 								i.forum === currentForum && (
 									<div className='post'>
 										<div className='main' key={i.username}>
-											<div className='prof' onClick={() => {handleClick(i.username)}}>
-												<img className='post-image' src={require("../conversation_photo.png")} alt='spartan'/>
-												<h5 className='username' >{i.username}</h5>
+											<div className='prof' style={{ position: 'relative', display: 'flex', padding: '10px', verticalAlign: 'middle', justifyContent:'space-between'}} onClick={() => { handleClick(i.username) }}>
+												<div style={{display:'flex'}}>
+													<img className='post-image' src={require("../conversation_photo.png")} alt='spartan' />
+  													<h5 className='username'>{i.username}</h5>
+												</div>
+												{i.username === userData.name && (
+													<div style={{justifyContent:'flex-end'}}>
+												  		<button style={{borderRadius:'10px', borderColor:'black', borderWidth:'2px'}} onClick={() => {deletePost(i.id)}}>Delete post</button>
+											  		</div>
+												)}
+  												
 											</div>
+
 											<div className='content'>
 												<p className='content' style={{fontSize:18}}>{i.content}</p>
 											</div>
 											{i.image && (
     											<div>
-        											<img src={"http://localhost.3000/uploads/"+ i.image} alt=''/>
+        											<img src={require("../uploads/"+ i.image)} alt='' style={{height:'300px', marginBottom:'10px'}}/>
     											</div>
 											)}
 
