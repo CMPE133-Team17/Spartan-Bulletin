@@ -15,10 +15,7 @@ const DM = ({user}) => {
   const [recipient, setRecipient] = useState(null);
   const [userData, setUserData] = useState(null);
   const [roomId, setRoomId] = useState(null);
-
-  const socket = io.connect('http://localhost:4000', {
-    withCredentials: true
-  });
+  const [socket, setSocket] = useState(null);
 
   useEffect(() => {
 
@@ -41,6 +38,13 @@ const DM = ({user}) => {
       };
   
       fetchFriends();
+
+      const newSocket = io.connect('http://localhost:4000', {
+        withCredentials: true
+      });
+      setSocket(newSocket);
+
+      return socket.disconnect();
 
     }
   }, [user]);

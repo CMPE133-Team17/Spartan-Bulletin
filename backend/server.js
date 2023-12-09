@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const mysql = require('mysql');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
+const multer = require('multer');
 
 const app = express();
 app.use(bodyParser.urlencoded({extended:false}));
@@ -120,10 +121,9 @@ app.post('/api/addMsg', (req, res) => {
 ///////////////////////////////////////////////////////FORUM PAGE/////////////////////////////////////////////////////////////////////////
 
 app.get('/api/getForumPosts', (req, res) => {
-    const q = 'SELECT * FROM forum_post WHERE forum = ? ORDER BY timestamp DESC';
-    const forum = req.query.forum;
-
-    db.query(q, [forum], (err, data) => {
+    const q = 'SELECT * FROM forum_post ORDER BY timestamp DESC';
+    
+    db.query(q, (err, data) => {
         if (err) {
             console.log(err);
         } else {
@@ -197,6 +197,8 @@ app.post('/api/addForumPost', (req, res) => {
     const content = req.body.text;
     const url = req.body.img;
     const forum = req.body.forum;
+
+    console.log(url);
 
     if (url) {
         const q = 'INSERT INTO forum_post (username, content, image, forum, timestamp) VALUES (?, ?, ?, ?, NOW())';
@@ -341,7 +343,7 @@ app.get('/bulletin/clubs', async (req, res) => {
     }
 });
 
-///////////////////////////////////////////////////////////OTHER STUFFS////////////////////////////////////////
+///////////////////////////////////////////////////////////DATABASE////////////////////////////////////////
 const db = mysql.createPool({
     host: 'localhost',
     user: 'root',
@@ -350,6 +352,9 @@ const db = mysql.createPool({
 });
   
 module.exports = db;
+
+///////////////////////////////////////////////////////////SOCKET.IO////////////////////////////////////////
+
 
 const http = require('http');
 const { Server } = require('socket.io');
@@ -384,6 +389,30 @@ io.on('connection', (socket) => {
         socket.to(data.room).emit('receive_message', data);
     })
 });
+
+///////////////////////////////////////////////////////////MULTER////////////////////////////////////////
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, "../frontend/src/uploads");
+    },
+    filename: function (req, file, cb) {
+      cb(null, Date.now() + file.originalname);
+    },
+});
+  
+const upload = multer({ storage : storage });
+  
+app.post("/api/upload", upload.single("file"), function (req, res) {
+    const file = req.file;
+    if (!file) {
+        return res.status(400).send('No file uploaded.');
+    }
+    res.status(200).json(file.filename);
+});
+
+
+///////////////////////////////////////////////////////////OTHER STUFFS////////////////////////////////////////
 
 const PORT = 4000; // Backend routing port
 server.listen(PORT, () => {

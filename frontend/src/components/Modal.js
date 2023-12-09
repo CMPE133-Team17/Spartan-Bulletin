@@ -4,7 +4,6 @@ import React, {useState} from 'react';
 const Modal = (props) => {
 
     const [content, setContent] = useState(null); 
-    const [img, setImg] = useState(null);
     const [mode, setMode] = useState('post')
     const [title, setTitle] = useState(null);
     const [club, setClub] = useState(props.clubs[0].name);
@@ -29,9 +28,7 @@ const Modal = (props) => {
                         {mode === 'post' ? (
                             <form className='new-post' onSubmit={(e) => {
                                 e.preventDefault();
-                                console.log('hello from modal');
-                                console.log(props.username, content);
-                                props.addForumPost(props.username, content, img);
+                                props.addForumPost(props.username, content);
                                 props.setOpenModal(false);
                             }} >
 
@@ -55,7 +52,7 @@ const Modal = (props) => {
                                     <input 
                                         type='file' 
                                         className='img'
-                                        onChange={(event) => setImg(event.target.value)}>
+                                        onChange={(event) => props.setFile(event.target.files[0])}>
                                     </input>
                                    
                                     <div style={{position:'absolute', bottom:'0', marginBottom:'15px', width:'300px'}}>
