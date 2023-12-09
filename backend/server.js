@@ -220,8 +220,8 @@ app.post('/api/addForumPost', (req, res) => {
 })
 
 app.post('/api/addNewForum', (req, res) => {
-    const club = req.body.club;
-    const title = req.body.title;
+    const club = req.body.clubname;
+    const title = req.body.content;
     const date = req.body.date;
 
     const q = 'INSERT INTO forums (title, clubname, date) VALUES (?, ?, ?)';

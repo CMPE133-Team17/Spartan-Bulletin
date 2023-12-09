@@ -5,9 +5,9 @@ const Modal = (props) => {
 
     const [content, setContent] = useState(null); 
     const [mode, setMode] = useState('post')
-    const [title, setTitle] = useState(null);
-    const [club, setClub] = useState(props.clubs[0].name);
-    const [date, setDate] = useState(null);
+    const [date, setDate] = useState(props.events.posts[0].timestamp);
+    const [title, setTitle] = useState(props.events.posts[0].content);
+    const [club, setClub] = useState(props.events.posts[0].club_name);
 
     const handleModeChange = (event) => {
         setMode(event.target.value);
@@ -85,30 +85,33 @@ const Modal = (props) => {
                         ):(
                             <form className='new-forum' onSubmit={(e) => {
                                 e.preventDefault();
-                                props.addNewForum(club, title, date);
+                                props.addNewForum(title, club, date);
                                 props.setOpenModal(false);
                             }} >
 
                                 <h2 className='title'>Create a new forum!</h2>
 
                                 <div className='input-forum'style={{display:'flex', flexDirection:'column', alignItems:'center'}}>
-                                    <select onChange={(event) => setClub(event.target.value)}>
-                                        {props.clubs.map((c) => (
-                                      
-                                        <option value={c.name}>{c.name}</option>
-                                    )
-                                    )}
-                                    </select>
+                                <select onChange={(event) => {
+                                    const selectedEvent = props.events.posts.find(
+                                        (e) => `${e.club_name}: ${e.content}` === event.target.value
+                                    );
+                                    if (selectedEvent) {
+                                        setTitle(selectedEvent.content);
+                                        setClub(selectedEvent.club_name);
+                                    }
+                                    }}>
+                                    {props.events.posts.map((e) => (
+                                        <option key={e.id} value={`${e.club_name}: ${e.content}`}>
+                                            {`${e.club_name}: ${e.content}`}
+                                        </option>
+                                    ))}
+                                </select>
+                                        
+                                    <input type='date' onChange={(e) => setDate(e.target.value)} required>
 
-                                    <div style={{marginTop:'10px'}}>
-                                        <label>Title:</label>
-                                        <input className='title' style={{width:'100%'}} onChange={(event) => setTitle(event.target.value)} placeholder='Title' required/>
-                                    </div>
-                                    
-                                    <div style={{marginTop:'10px', display:'flex'}}>
-                                        <label>Date:</label>
-                                        <input type ="date" style={{width:'100%', marginLeft:'5px'}} onChange={(event) => setDate(event.target.value)}></input>
-                                    </div>
+                                    </input>
+
 
                                     <div style={{position:'absolute', bottom:'0', marginBottom:'15px', width:'300px'}}>
                                     <button className='submit' 
@@ -119,7 +122,7 @@ const Modal = (props) => {
                                         borderRadius:'200px', 
                                         backgroundColor: '#3498db', 
                                         borderColor:'#3498db', 
-                                        color:'white'}}><b>Submit</b></button>
+                                        color:'white'}}><b>Create</b></button>
 
                                     <button className='cancel' onClick={() => {
                                         props.setOpenModal(false);

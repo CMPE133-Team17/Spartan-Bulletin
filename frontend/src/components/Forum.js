@@ -17,7 +17,7 @@ function Forum ({user}){
 	const [userData, setUserData] = useState('');
 	const [openModal, setOpenModal] = useState(false);
 	const [forumPosts, setForumPosts] = useState([]);
-	const [clubs, setClubs] = useState([]);
+	const [events, setEvents] = useState([]);
 	const [interests, setInterests] = useState([]);
 	const [selectedUser, setSelectedUser] = useState(null);
 	const [openModal2, setOpenModal2] = useState(false);
@@ -51,14 +51,15 @@ function Forum ({user}){
       		setUserData(userData);
       		console.log('User data from cookie: ', userData);
 
-			const fetchClubs = async() => {
-				const clubResponse = await axios.get('/api/getClubs');
-				setClubs(clubResponse.data);
+			const fetchPosts = async() => {
+				const clubResponse = await axios.get('/bulletin/posts');
+				console.log(clubResponse.data);
+				setEvents(clubResponse.data);
 			}
 			
 			fetchForumPosts();
 			fetchForums();
-			fetchClubs();
+			fetchPosts();
      	};
 	},[user]);
 
@@ -69,8 +70,8 @@ function Forum ({user}){
 
 	}
 
-	const addNewForum = async (club, title, date) => {
-		await axios.post('/api/addNewForum', {user: userData.name, club: club, title:title, date:date});
+	const addNewForum = async (content, clubname, date) => {
+		await axios.post('/api/addNewForum', {content: content, clubname: clubname, date: date});
 		await fetchForums();
 	}
 
@@ -230,7 +231,7 @@ function Forum ({user}){
 				username={userData.name} 
 				addForumPost={addForumPost} 
 				addNewForum={addNewForum} 
-				clubs={clubs} 
+				events={events} 
 				setFile={setFile}
 			/>}
 
