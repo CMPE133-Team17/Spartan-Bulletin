@@ -1,9 +1,26 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {APIProvider, Map, AdvancedMarker, Pin, InfoWindow} from '@vis.gl/react-google-maps';
+import {useNavigate} from 'react-router-dom';
+import Cookies from 'js-cookie';
 
+function SpartanMap({user}) {
 
-function SpartanMap() {
+	const [userData, setUserData] = useState('');
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		const authCookie = Cookies.get('auth');
+
+		if (authCookie) {
+			const userData = JSON.parse(authCookie);
+			setUserData(userData);
+			console.log('User data from cookie: ', userData);
+		} else {
+			navigate('/login');
+		}
+	}, [user]);
+
 	// MAP BOUNDS AND CENTER
 	const mCenter = {lat:37.33526 , lng:-121.88149};
 	const SjsuBounds = {

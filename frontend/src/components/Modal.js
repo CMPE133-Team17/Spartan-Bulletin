@@ -52,7 +52,7 @@ const Modal = (props) => {
                                     <input 
                                         type='file' 
                                         className='img'
-                                        onChange={(event) => props.setFile(event.target.files[0])}>
+                                        onChange={(event) => props.handleFileUpload(event)}>
                                     </input>
                                    
                                     <div style={{position:'absolute', bottom:'0', marginBottom:'15px', width:'300px'}}>
@@ -108,7 +108,7 @@ const Modal = (props) => {
                                     ))}
                                 </select>
                                         
-                                    <input type='date' onChange={(e) => setDate(e.target.value)} required>
+                                    <input type='date' onChange={(e) => setDate(e.target.value)} required style={{marginTop:'10px'}}>
 
                                     </input>
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import {useNavigate} from 'react-router-dom';
 
 const Bulletin = ({ user }) => {
   const [userData, setUserData] = useState(null);
@@ -12,6 +13,7 @@ const Bulletin = ({ user }) => {
   const [clubs, setClubs] = useState([]);
   const [name, setName] = useState('');
   const[clubName, setClubName] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchClubs();
@@ -21,6 +23,8 @@ const Bulletin = ({ user }) => {
       setUserData(userData);
       console.log('User data from cookie: ', userData);
       fetchPosts() ;  
+    } else {
+      navigate('/login');
     }
   }, [user]);
 

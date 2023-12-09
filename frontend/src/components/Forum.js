@@ -9,6 +9,7 @@ import { AiFillCaretRight } from "react-icons/ai";
 import {format} from 'timeago.js';
 import Modal2 from './Modal2.js';
 import Modal3 from './Modal3.js';
+import {useNavigate} from 'react-router-dom';
 
 
 function Forum ({user}){
@@ -24,8 +25,9 @@ function Forum ({user}){
 	const [currentForum, setCurrentForum] = useState('General');
 	const [file, setFile] = useState(null);
 	const [openModal3, setOpenModal3] = useState(false);
+	const navigate = useNavigate();
 
-
+	//gets all posts from the database 
 	const fetchForumPosts = async() => {
 		try {
 			const response = await axios.get('/api/getForumPosts');
@@ -35,6 +37,7 @@ function Forum ({user}){
 		}
 	};
 
+	//gets all exisiting forums 
 	const fetchForums = async() => {
 		try {
 			const response = await axios.get('/api/getForums');
@@ -60,21 +63,37 @@ function Forum ({user}){
 			fetchForumPosts();
 			fetchForums();
 			fetchPosts();
-     	};
+     	} else {
+			navigate('/login');
+		}
 	},[user]);
 
+	//adds new post to the database and refreshes the feed
 	const addForumPost = async (username, content) => {
-		const url = await upload();
-		await axios.post("/api/addForumPost", {user : username, text: content, img: url, forum:currentForum});
+		try {
+      		const url = await upload();
+      		const postData = {
+        	user: username,
+        	text: content,
+        	img: url || null, 
+       	 	forum: currentForum,
+      		};
+      		await axios.post("/api/addForumPost", postData);
+    	} catch (error) {
+      		console.error('Error adding forum post:', error);
+    	}
+
 		await fetchForumPosts();
 
 	}
 
+	//adds new forum to the database and display it on the left side 
 	const addNewForum = async (content, clubname, date) => {
 		await axios.post('/api/addNewForum', {content: content, clubname: clubname, date: date});
 		await fetchForums();
 	}
 
+	//triggered when clicking on the other user's profile pic, the user have the ability to add friends
 	const handleClick = async (username) => {
 		setSelectedUser(username);
 	
@@ -98,6 +117,7 @@ function Forum ({user}){
 		}
 	};
 
+	//remove selected user from friend list
 	const removeFriend = async (friend) => {
 		await axios.post('/api/removeFriend', {user: userData.name, fren: friend}, (err, result) => {
 			if (err) {
@@ -106,6 +126,7 @@ function Forum ({user}){
 		})
 	}
 
+	//adds selected user into friend list
 	const addFriend = async (friend) => {
 		await axios.post('/api/addFriend', {user: userData.name, fren: friend}, (err, result) => {
 			if (err) {
@@ -114,22 +135,32 @@ function Forum ({user}){
 		})
 	}
 
+	//gives a unique name to the file upload
 	const upload = async () => {
 		try {
-			const formData = new FormData();
-			formData.append('file', file);
-			const res = await axios.post('/api/upload', formData);
-			return res.data;
-		} catch(err) {
-			console.log(err);
+			if (file) {
+			  const formData = new FormData();
+			  formData.append('file', file);
+			  const res = await axios.post('/api/upload', formData);
+			  return res.data;
+			}
+			return null; 
+		} catch (err) {
+			console.log('Error uploading file:', err);
+			return null;
 		}
 	}
 
+	const handleFileUpload = (event) => {
+		const uploadedFile = event.target.files[0];
+		setFile(uploadedFile);
+	};
+
+	//removes post from the database and re render the page afterwards
 	const deletePost = async (id) => {
 		try {
 		  await axios.post('/api/deletePost', { postId: id });
-			const updatedForumPosts = await axios.get('/api/getForumPosts');
-			setForumPosts(updatedForumPosts.data);
+			await fetchForumPosts();
 		} catch (error) {
 		  console.error('Error deleting post:', error);
 		}
@@ -193,7 +224,7 @@ function Forum ({user}){
 											</div>
 											{i.image && (
     											<div>
-        											<img src={require("../uploads/"+ i.image)} alt='' style={{height:'300px', marginBottom:'10px'}}/>
+        											<img src={require(`../uploads/${i.image}`)} alt='' style={{height:'300px', marginBottom:'10px'}}/>
     											</div>
 											)}
 
@@ -220,6 +251,7 @@ function Forum ({user}){
 				</div>
 			</div>
 
+			{/*pop up window for making new posts/forums */}
 			{openModal && (
         		<div className="overlay" onClick={() => setOpenModal(false)}></div>
       		)}
@@ -232,9 +264,10 @@ function Forum ({user}){
 				addForumPost={addForumPost} 
 				addNewForum={addNewForum} 
 				events={events} 
-				setFile={setFile}
+				handleFileUpload={handleFileUpload}
 			/>}
 
+			{/* pop up window for adding/removing friends*/}
 			{openModal2 && 
 			<Modal2 
 				openModal2={openModal2} 

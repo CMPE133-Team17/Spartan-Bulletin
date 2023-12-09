@@ -3,6 +3,7 @@ import axios from 'axios';
 import '../DM.css';
 import Cookies from 'js-cookie';
 import {format} from 'timeago.js';
+import {useNavigate} from 'react-router-dom';
 
 //TODO: List friends on the left side and have a chat screen on the right side
 //For the friends list, have a profile pics(optional) display to the left of their names
@@ -15,6 +16,7 @@ const DM = ({user, socket}) => {
   const [recipient, setRecipient] = useState(null);
   const [userData, setUserData] = useState(null);
   const [roomId, setRoomId] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
 
@@ -36,6 +38,8 @@ const DM = ({user, socket}) => {
       };
   
       fetchFriends();
+    } else {
+      navigate('/login');
     }
   }, [user]);
   
