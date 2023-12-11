@@ -10,7 +10,7 @@ FIRST TIME SET UP: command from frontend folder: npm ci
 command from backend folder: npm run dev
 
 ## Nececessary installations
-make sure you have these packages in order to run this project
+Make sure you have these packages in order to run this project
 (can be installed from terminal using npm install)
 
 frontend:
